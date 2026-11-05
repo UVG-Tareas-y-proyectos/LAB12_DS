@@ -1,0 +1,20 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.0.0/schema.json",
+  "name": "exploracion",
+  "displayName": "Exploración",
+  "displayOption": "FitToPage",
+  "width": 1280,
+  "height": 800,
+  "visualInteractions": [
+    {
+      "source": "evolucion",
+      "target": "vias",
+      "type": "DataFilter"
+    },
+    {
+      "source": "vias",
+      "target": "evolucion",
+      "type": "DataFilter"
+    }
+  ]
+}

@@ -1,0 +1,3 @@
+Repositorio: https://github.com/UVG-Tareas-y-proyectos/lab10_ds
+Commit: 7831e3d36f905612754095b736083589f914e9aa
+Copia de código, datos, figuras y documento del Lab 10 sin modificaciones. Se excluyen cachés y archivos internos de Git.

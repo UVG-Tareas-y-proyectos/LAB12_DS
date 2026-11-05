@@ -1,0 +1,24 @@
+{
+  "name": "Observatorio Guatemala",
+  "dataColors": [
+    "#214E66",
+    "#2A7F8E",
+    "#6C7A59",
+    "#C96B4B",
+    "#D7A84B",
+    "#7C8991"
+  ],
+  "background": "#F7F6F2",
+  "foreground": "#1E1E1E",
+  "tableAccent": "#214E66",
+  "textClasses": {
+    "label": {
+      "fontFace": "Arial",
+      "fontSize": 12
+    },
+    "title": {
+      "fontFace": "Arial",
+      "fontSize": 16
+    }
+  }
+}

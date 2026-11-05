@@ -1,0 +1,9 @@
+modelo_id,modelo,mae,rmse,serie,evaluacion
+LAB1_TOTAL_1,"ARIMA(2,1,0)",156261.29428104675,170915.01814490114,Total mensual,Prueba cronológica: abril 2021 a junio 2026 (63 meses)
+LAB1_TOTAL_2,"ARIMA(0,1,2)",156513.33739140476,171210.54059808937,Total mensual,Prueba cronológica: abril 2021 a junio 2026 (63 meses)
+LAB1_TOTAL_3,"ARIMA(2,1,2)",165701.0925642784,180457.503837646,Total mensual,Prueba cronológica: abril 2021 a junio 2026 (63 meses)
+LAB1_TOTAL_4,Suavizamiento exponencial simple,165372.54110944062,180598.23322269143,Total mensual,Prueba cronológica: abril 2021 a junio 2026 (63 meses)
+LAB1_TOTAL_5,Holt-Winters aditivo,172351.72138774366,184529.71770140823,Total mensual,Prueba cronológica: abril 2021 a junio 2026 (63 meses)
+LAB1_TOTAL_6,Seasonal naive,207321.6373958207,219663.86935700072,Total mensual,Prueba cronológica: abril 2021 a junio 2026 (63 meses)
+LAB1_TOTAL_7,"SARIMA(2,1,2)(1,0,1,12)",210905.80514334963,225573.47487946547,Total mensual,Prueba cronológica: abril 2021 a junio 2026 (63 meses)
+LAB1_TOTAL_8,Prophet - respaldo aditivo,239790.76225820475,252070.38083706005,Total mensual,Prueba cronológica: abril 2021 a junio 2026 (63 meses)

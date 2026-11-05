@@ -1,0 +1,366 @@
+{
+  "name": "Observatorio",
+  "compatibilityLevel": 1567,
+  "model": {
+    "culture": "es-ES",
+    "defaultPowerBIDataSourceVersion": "powerBI_V3",
+    "sourceQueryCulture": "en-US",
+    "tables": [
+      {
+        "name": "Flujo",
+        "columns": [
+          {
+            "name": "fecha",
+            "dataType": "dateTime",
+            "sourceColumn": "fecha",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "via",
+            "dataType": "string",
+            "sourceColumn": "via",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "viajeros",
+            "dataType": "double",
+            "sourceColumn": "viajeros",
+            "summarizeBy": "sum"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Flujo",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Fuente = Csv.Document(File.Contents(RutaDatos & \"/flujo.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),",
+                "    Encabezados = Table.PromoteHeaders(Fuente, [PromoteAllScalars=true]),",
+                "    Tipos = Table.TransformColumnTypes(Encabezados, {{\"fecha\", type date}, {\"via\", type text}, {\"viajeros\", type number}}, \"en-US\")",
+                "in",
+                "    Tipos"
+              ]
+            }
+          }
+        ],
+        "measures": [
+          {
+            "name": "Ingresos",
+            "expression": "SUM(Flujo[viajeros])",
+            "formatString": "#,0.00"
+          },
+          {
+            "name": "Participacion terrestre",
+            "expression": "DIVIDE(CALCULATE([Ingresos], Flujo[via] = \"Terrestre\"), CALCULATE([Ingresos], REMOVEFILTERS(Flujo[via])))",
+            "formatString": "0.00%"
+          }
+        ]
+      },
+      {
+        "name": "Calendario",
+        "columns": [
+          {
+            "name": "fecha",
+            "dataType": "dateTime",
+            "sourceColumn": "fecha",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "anio",
+            "dataType": "int64",
+            "sourceColumn": "anio",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "trimestre",
+            "dataType": "int64",
+            "sourceColumn": "trimestre",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "mes",
+            "dataType": "int64",
+            "sourceColumn": "mes",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "periodo",
+            "dataType": "string",
+            "sourceColumn": "periodo",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Calendario",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Fuente = Csv.Document(File.Contents(RutaDatos & \"/calendario.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),",
+                "    Encabezados = Table.PromoteHeaders(Fuente, [PromoteAllScalars=true]),",
+                "    Tipos = Table.TransformColumnTypes(Encabezados, {{\"fecha\", type date}, {\"anio\", Int64.Type}, {\"trimestre\", Int64.Type}, {\"mes\", Int64.Type}, {\"periodo\", type text}}, \"en-US\")",
+                "in",
+                "    Tipos"
+              ]
+            }
+          }
+        ],
+        "hierarchies": [
+          {
+            "name": "Jerarquía temporal",
+            "levels": [
+              {
+                "name": "Año",
+                "ordinal": 0,
+                "column": "anio"
+              },
+              {
+                "name": "Trimestre",
+                "ordinal": 1,
+                "column": "trimestre"
+              },
+              {
+                "name": "Mes",
+                "ordinal": 2,
+                "column": "mes"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Metricas",
+        "columns": [
+          {
+            "name": "modelo_id",
+            "dataType": "string",
+            "sourceColumn": "modelo_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "modelo",
+            "dataType": "string",
+            "sourceColumn": "modelo",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "MAE base",
+            "dataType": "double",
+            "sourceColumn": "mae",
+            "summarizeBy": "sum"
+          },
+          {
+            "name": "RMSE base",
+            "dataType": "double",
+            "sourceColumn": "rmse",
+            "summarizeBy": "sum"
+          },
+          {
+            "name": "serie",
+            "dataType": "string",
+            "sourceColumn": "serie",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "evaluacion",
+            "dataType": "string",
+            "sourceColumn": "evaluacion",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Metricas",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Fuente = Csv.Document(File.Contents(RutaDatos & \"/metricas_modelos.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),",
+                "    Encabezados = Table.PromoteHeaders(Fuente, [PromoteAllScalars=true]),",
+                "    Tipos = Table.TransformColumnTypes(Encabezados, {{\"modelo_id\", type text}, {\"modelo\", type text}, {\"mae\", type number}, {\"rmse\", type number}, {\"serie\", type text}, {\"evaluacion\", type text}}, \"en-US\")",
+                "in",
+                "    Tipos"
+              ]
+            }
+          }
+        ],
+        "measures": [
+          {
+            "name": "MAE",
+            "expression": "SELECTEDVALUE(Metricas[MAE base])",
+            "formatString": "#,0.00"
+          },
+          {
+            "name": "RMSE",
+            "expression": "SELECTEDVALUE(Metricas[RMSE base])",
+            "formatString": "#,0.00"
+          }
+        ]
+      },
+      {
+        "name": "Predicciones",
+        "columns": [
+          {
+            "name": "clave",
+            "dataType": "string",
+            "sourceColumn": "clave",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "serie",
+            "dataType": "string",
+            "sourceColumn": "serie",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "fecha",
+            "dataType": "dateTime",
+            "sourceColumn": "fecha",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "real",
+            "dataType": "double",
+            "sourceColumn": "real",
+            "summarizeBy": "sum"
+          },
+          {
+            "name": "prediccion",
+            "dataType": "double",
+            "sourceColumn": "prediccion",
+            "summarizeBy": "sum"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Predicciones",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Fuente = Csv.Document(File.Contents(RutaDatos & \"/predicciones_lstm.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),",
+                "    Encabezados = Table.PromoteHeaders(Fuente, [PromoteAllScalars=true]),",
+                "    Tipos = Table.TransformColumnTypes(Encabezados, {{\"clave\", type text}, {\"serie\", type text}, {\"fecha\", type date}, {\"real\", type number}, {\"prediccion\", type number}}, \"en-US\")",
+                "in",
+                "    Tipos"
+              ]
+            }
+          }
+        ],
+        "measures": [
+          {
+            "name": "Observado",
+            "expression": "VAR Serie = SELECTEDVALUE(Predicciones[clave], \"total_viajeros\") RETURN CALCULATE(SUM(Predicciones[real]), KEEPFILTERS(Predicciones[clave] = Serie))",
+            "formatString": "#,0.00"
+          },
+          {
+            "name": "Estimado LSTM",
+            "expression": "VAR Serie = SELECTEDVALUE(Predicciones[clave], \"total_viajeros\") RETURN CALCULATE(SUM(Predicciones[prediccion]), KEEPFILTERS(Predicciones[clave] = Serie))",
+            "formatString": "#,0.00"
+          }
+        ]
+      },
+      {
+        "name": "MetricasLSTM",
+        "columns": [
+          {
+            "name": "clave",
+            "dataType": "string",
+            "sourceColumn": "clave",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "serie",
+            "dataType": "string",
+            "sourceColumn": "serie",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "configuracion",
+            "dataType": "string",
+            "sourceColumn": "configuracion",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "arquitectura",
+            "dataType": "string",
+            "sourceColumn": "arquitectura",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "ventana",
+            "dataType": "int64",
+            "sourceColumn": "ventana",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "mae_test",
+            "dataType": "double",
+            "sourceColumn": "mae_test",
+            "summarizeBy": "sum"
+          },
+          {
+            "name": "rmse_test",
+            "dataType": "double",
+            "sourceColumn": "rmse_test",
+            "summarizeBy": "sum"
+          },
+          {
+            "name": "smape_test",
+            "dataType": "double",
+            "sourceColumn": "smape_test",
+            "summarizeBy": "sum"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "MetricasLSTM",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Fuente = Csv.Document(File.Contents(RutaDatos & \"/metricas_lstm.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),",
+                "    Encabezados = Table.PromoteHeaders(Fuente, [PromoteAllScalars=true]),",
+                "    Tipos = Table.TransformColumnTypes(Encabezados, {{\"clave\", type text}, {\"serie\", type text}, {\"configuracion\", type text}, {\"arquitectura\", type text}, {\"ventana\", Int64.Type}, {\"mae_test\", type number}, {\"rmse_test\", type number}, {\"smape_test\", type number}}, \"en-US\")",
+                "in",
+                "    Tipos"
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "expressions": [
+      {
+        "name": "RutaDatos",
+        "kind": "m",
+        "expression": "\"C:/Users/mdax8/Desktop/UVG/8 Semestre/Data Science/Lab 12/output/PowerBI_Avance/data/processed\" meta [IsParameterQuery=true, Type=\"Text\", IsParameterQueryRequired=true]"
+      }
+    ],
+    "relationships": [
+      {
+        "name": "8f20e90a-6c3a-51a3-b82d-431ea978ad53",
+        "fromTable": "Flujo",
+        "fromColumn": "fecha",
+        "toTable": "Calendario",
+        "toColumn": "fecha",
+        "fromCardinality": "many",
+        "toCardinality": "one",
+        "crossFilteringBehavior": "oneDirection"
+      }
+    ],
+    "annotations": [
+      {
+        "name": "__PBI_TimeIntelligenceEnabled",
+        "value": "0"
+      }
+    ]
+  }
+}

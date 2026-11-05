@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+*.aux
+*.log
+*.out
+*.toc
+tmp/
+.venv/
+.pytest_cache/
+data/processed/*
+!data/processed/.gitkeep
+.ipynb_checkpoints/
+work/

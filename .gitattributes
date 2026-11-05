@@ -1,0 +1,6 @@
+data/raw/* -text
+datos/*.csv -text
+data/processed/predicciones_lstm.csv -text
+data/processed/metricas_lstm.csv -text
+*.docx -text
+*.pdf -text
