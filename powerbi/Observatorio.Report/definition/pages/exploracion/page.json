@@ -4,7 +4,33 @@
   "displayName": "Exploración",
   "displayOption": "FitToPage",
   "width": 1280,
-  "height": 800,
+  "height": 720,
+  "objects": {
+    "background": [
+      {
+        "properties": {
+          "color": {
+            "solid": {
+              "color": {
+                "expr": {
+                  "Literal": {
+                    "Value": "'#F7F6F2'"
+                  }
+                }
+              }
+            }
+          },
+          "transparency": {
+            "expr": {
+              "Literal": {
+                "Value": "0D"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
   "visualInteractions": [
     {
       "source": "evolucion",

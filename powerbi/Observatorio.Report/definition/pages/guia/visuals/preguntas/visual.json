@@ -1,0 +1,150 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "preguntas",
+  "position": {
+    "x": 20,
+    "y": 80,
+    "z": 600,
+    "height": 300,
+    "width": 610,
+    "tabOrder": 600
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Preguntas que responde el informe",
+                    "textStyle": {
+                      "fontFamily": "Arial",
+                      "fontSize": "12pt",
+                      "fontWeight": "bold",
+                      "color": "#214E66"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "1. ¿Cuándo aumenta o disminuye el ingreso de visitantes y qué meses requieren revisar la capacidad de atención? Página Exploración.",
+                    "textStyle": {
+                      "fontFamily": "Arial",
+                      "fontSize": "10pt",
+                      "fontWeight": "normal",
+                      "color": "#1E1E1E"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "2. ¿Cómo se distribuyen los ingresos por vía y en qué puntos de acceso se concentran? Exploración y Mercados y acceso.",
+                    "textStyle": {
+                      "fontFamily": "Arial",
+                      "fontSize": "10pt",
+                      "fontWeight": "normal",
+                      "color": "#1E1E1E"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "3. ¿Qué regiones y países de residencia aportan los mayores volúmenes registrados? Mercados y acceso.",
+                    "textStyle": {
+                      "fontFamily": "Arial",
+                      "fontSize": "10pt",
+                      "fontWeight": "normal",
+                      "color": "#1E1E1E"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "4. ¿Qué meses superan el patrón estacional y qué error registran los modelos ya evaluados? Estacionalidad y modelos.",
+                    "textStyle": {
+                      "fontFamily": "Arial",
+                      "fontSize": "10pt",
+                      "fontWeight": "normal",
+                      "color": "#1E1E1E"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "Colores",
+                    "textStyle": {
+                      "fontFamily": "Arial",
+                      "fontSize": "12pt",
+                      "fontWeight": "bold",
+                      "color": "#214E66"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "Azul: valores observados. Turquesa y verde: comparaciones entre categorías y vías. Ocre: referencia histórica. Coral: estimaciones LSTM y avisos. Gris: error de modelos.",
+                    "textStyle": {
+                      "fontFamily": "Arial",
+                      "fontSize": "10pt",
+                      "fontWeight": "normal",
+                      "color": "#1E1E1E"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#FFFFFF'"
+                    }
+                  }
+                }
+              }
+            },
+            "transparency": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

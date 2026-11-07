@@ -2,18 +2,54 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
   "name": "ayuda",
   "position": {
-    "x": 28,
-    "y": 62,
-    "z": 0,
-    "height": 65,
-    "width": 1224,
-    "tabOrder": 0
+    "x": 750,
+    "y": 136,
+    "z": 1400,
+    "height": 90,
+    "width": 510,
+    "tabOrder": 1400
   },
   "visual": {
     "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Cómo usar esta página",
+                    "textStyle": {
+                      "fontFamily": "Arial",
+                      "fontSize": "9pt",
+                      "fontWeight": "bold",
+                      "color": "#1E1E1E"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "Haga clic en un punto de la serie para ver ese periodo en las barras por vía; clic en un espacio vacío quita la selección. Con las flechas de la gráfica baje de año a trimestre y a mes, o regrese al nivel anterior.",
+                    "textStyle": {
+                      "fontFamily": "Arial",
+                      "fontSize": "9pt",
+                      "fontWeight": "normal",
+                      "color": "#1E1E1E"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
     "drillFilterOtherVisuals": true,
     "visualContainerObjects": {
-      "title": [
+      "background": [
         {
           "properties": {
             "show": {
@@ -23,34 +59,24 @@
                 }
               }
             },
-            "text": {
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#FFFFFF'"
+                    }
+                  }
+                }
+              }
+            },
+            "transparency": {
               "expr": {
                 "Literal": {
-                  "Value": "''"
+                  "Value": "0D"
                 }
               }
             }
-          }
-        }
-      ]
-    },
-    "objects": {
-      "general": [
-        {
-          "properties": {
-            "paragraphs": [
-              {
-                "textRuns": [
-                  {
-                    "value": "Seleccione un mes de la serie para filtrar las vías. Haga clic en un espacio vacío para quitar la selección; use el borrador de cada segmentador para limpiar sus filtros.",
-                    "textStyle": {
-                      "fontFamily": "Arial",
-                      "fontSize": "12pt"
-                    }
-                  }
-                ]
-              }
-            ]
           }
         }
       ]

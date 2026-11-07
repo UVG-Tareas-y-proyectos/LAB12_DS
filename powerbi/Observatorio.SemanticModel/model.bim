@@ -7,6 +7,131 @@
     "sourceQueryCulture": "en-US",
     "tables": [
       {
+        "name": "Calendario",
+        "columns": [
+          {
+            "name": "fecha",
+            "dataType": "dateTime",
+            "sourceColumn": "fecha",
+            "summarizeBy": "none",
+            "formatString": "yyyy-mm"
+          },
+          {
+            "name": "anio",
+            "dataType": "int64",
+            "sourceColumn": "anio",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "trimestre_num",
+            "dataType": "int64",
+            "sourceColumn": "trimestre",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "mes_num",
+            "dataType": "int64",
+            "sourceColumn": "mes",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "periodo",
+            "dataType": "string",
+            "sourceColumn": "periodo",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "Mes",
+            "dataType": "string",
+            "sourceColumn": "Mes",
+            "summarizeBy": "none",
+            "sortByColumn": "mes_num"
+          },
+          {
+            "name": "Trimestre",
+            "dataType": "string",
+            "sourceColumn": "Trimestre",
+            "summarizeBy": "none",
+            "sortByColumn": "trimestre_num"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Calendario",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Fuente = Csv.Document(File.Contents(RutaDatos & \"/calendario.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),",
+                "    Encabezados = Table.PromoteHeaders(Fuente, [PromoteAllScalars=true]),",
+                "    Tipos = Table.TransformColumnTypes(Encabezados, {{\"fecha\", type date}, {\"anio\", Int64.Type}, {\"trimestre\", Int64.Type}, {\"mes\", Int64.Type}, {\"periodo\", type text}}, \"en-US\"),",
+                "    NombreMes = Table.AddColumn(Tipos, \"Mes\", each {\"Ene\",\"Feb\",\"Mar\",\"Abr\",\"May\",\"Jun\",\"Jul\",\"Ago\",\"Sep\",\"Oct\",\"Nov\",\"Dic\"}{[mes] - 1}, type text),",
+                "    NombreTrimestre = Table.AddColumn(NombreMes, \"Trimestre\", each \"T\" & Text.From([trimestre]), type text)",
+                "in",
+                "    NombreTrimestre"
+              ]
+            }
+          }
+        ],
+        "hierarchies": [
+          {
+            "name": "Jerarquía de periodo",
+            "levels": [
+              {
+                "name": "Año",
+                "ordinal": 0,
+                "column": "anio"
+              },
+              {
+                "name": "Trimestre",
+                "ordinal": 1,
+                "column": "Trimestre"
+              },
+              {
+                "name": "Mes",
+                "ordinal": 2,
+                "column": "Mes"
+              }
+            ]
+          }
+        ],
+        "measures": [
+          {
+            "name": "Selección activa",
+            "expression": "VAR Anios = IF(ISFILTERED(Calendario[anio]), CONCATENATEX(VALUES(Calendario[anio]), Calendario[anio], \", \", Calendario[anio], ASC), \"todos los años\")\nVAR Meses = IF(ISFILTERED(Calendario[Mes]) || ISFILTERED(Calendario[mes_num]) || ISFILTERED(Calendario[Trimestre]), CONCATENATEX(SUMMARIZE(Calendario, Calendario[mes_num], Calendario[Mes]), Calendario[Mes], \", \", Calendario[mes_num], ASC), \"todos los meses\")\nVAR ViasSel = IF(ISFILTERED(Vias[via]), CONCATENATEX(VALUES(Vias[via]), Vias[via], \", \", Vias[via], ASC), \"todas las vías\")\nRETURN \"Consulta activa: \" & Anios & \" · \" & Meses & \" · \" & ViasSel"
+          }
+        ]
+      },
+      {
+        "name": "Vias",
+        "columns": [
+          {
+            "name": "via",
+            "dataType": "string",
+            "sourceColumn": "via",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Vias",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Fuente = Table.FromRecords({[via = \"Aérea\"], [via = \"Marítima\"], [via = \"Terrestre\"]}, type table [via = text])",
+                "in",
+                "    Fuente"
+              ]
+            }
+          }
+        ]
+      },
+      {
         "name": "Flujo",
         "columns": [
           {
@@ -25,7 +150,8 @@
             "name": "viajeros",
             "dataType": "double",
             "sourceColumn": "viajeros",
-            "summarizeBy": "sum"
+            "summarizeBy": "sum",
+            "isHidden": true
           }
         ],
         "partitions": [
@@ -49,17 +175,65 @@
           {
             "name": "Ingresos",
             "expression": "SUM(Flujo[viajeros])",
-            "formatString": "#,0.00"
+            "formatString": "#,0"
           },
           {
             "name": "Participacion terrestre",
-            "expression": "DIVIDE(CALCULATE([Ingresos], Flujo[via] = \"Terrestre\"), CALCULATE([Ingresos], REMOVEFILTERS(Flujo[via])))",
+            "expression": "DIVIDE(CALCULATE([Ingresos], Vias[via] = \"Terrestre\"), CALCULATE([Ingresos], REMOVEFILTERS(Vias)))",
             "formatString": "0.00%"
+          },
+          {
+            "name": "Meses con registro",
+            "expression": "CALCULATE(DISTINCTCOUNT(Flujo[fecha]), REMOVEFILTERS(Vias))",
+            "formatString": "0"
+          },
+          {
+            "name": "Aviso exploración",
+            "expression": "IF(ISBLANK([Ingresos]) || [Ingresos] = 0, \"No hay ingresos registrados para esta selección. Amplíe los años, meses o vías, o use Limpiar filtros.\", \"\")"
           }
         ]
       },
       {
-        "name": "Calendario",
+        "name": "Region",
+        "columns": [
+          {
+            "name": "Región",
+            "dataType": "string",
+            "sourceColumn": "Región",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "Grupo regional",
+            "dataType": "string",
+            "sourceColumn": "Grupo regional",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Region",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Fuente = Csv.Document(File.Contents(RutaDatos & \"/regiones.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),",
+                "    Encabezados = Table.PromoteHeaders(Fuente, [PromoteAllScalars=true]),",
+                "    Tipos = Table.TransformColumnTypes(Encabezados, {{\"fecha\", type date}, {\"Región\", type text}, {\"viajeros\", type number}}, \"en-US\"),",
+                "    Totales = Table.Group(Tipos, {\"Región\"}, {{\"Total\", each List.Sum([viajeros]), type number}}),",
+                "    Orden = Table.Sort(Totales, {{\"Total\", Order.Descending}}),",
+                "    Mayores = List.FirstN(Orden[Región], 4),",
+                "    Grupo = Table.AddColumn(Orden, \"Grupo regional\", each if List.Contains(Mayores, [Región]) then Text.Proper([Región]) else \"Otras regiones\", type text),",
+                "    Resultado = Table.SelectColumns(Grupo, {\"Región\", \"Grupo regional\"})",
+                "in",
+                "    Resultado"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Regiones",
         "columns": [
           {
             "name": "fecha",
@@ -68,67 +242,214 @@
             "summarizeBy": "none"
           },
           {
-            "name": "anio",
-            "dataType": "int64",
-            "sourceColumn": "anio",
-            "summarizeBy": "none"
-          },
-          {
-            "name": "trimestre",
-            "dataType": "int64",
-            "sourceColumn": "trimestre",
-            "summarizeBy": "none"
-          },
-          {
-            "name": "mes",
-            "dataType": "int64",
-            "sourceColumn": "mes",
-            "summarizeBy": "none"
-          },
-          {
-            "name": "periodo",
+            "name": "Región",
             "dataType": "string",
-            "sourceColumn": "periodo",
+            "sourceColumn": "Región",
             "summarizeBy": "none"
+          },
+          {
+            "name": "viajeros",
+            "dataType": "double",
+            "sourceColumn": "viajeros",
+            "summarizeBy": "sum",
+            "isHidden": true
           }
         ],
         "partitions": [
           {
-            "name": "Calendario",
+            "name": "Regiones",
             "mode": "import",
             "source": {
               "type": "m",
               "expression": [
                 "let",
-                "    Fuente = Csv.Document(File.Contents(RutaDatos & \"/calendario.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),",
+                "    Fuente = Csv.Document(File.Contents(RutaDatos & \"/regiones.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),",
                 "    Encabezados = Table.PromoteHeaders(Fuente, [PromoteAllScalars=true]),",
-                "    Tipos = Table.TransformColumnTypes(Encabezados, {{\"fecha\", type date}, {\"anio\", Int64.Type}, {\"trimestre\", Int64.Type}, {\"mes\", Int64.Type}, {\"periodo\", type text}}, \"en-US\")",
+                "    Tipos = Table.TransformColumnTypes(Encabezados, {{\"fecha\", type date}, {\"Región\", type text}, {\"viajeros\", type number}}, \"en-US\")",
                 "in",
                 "    Tipos"
               ]
             }
           }
         ],
-        "hierarchies": [
+        "measures": [
           {
-            "name": "Jerarquía temporal",
-            "levels": [
-              {
-                "name": "Año",
-                "ordinal": 0,
-                "column": "anio"
-              },
-              {
-                "name": "Trimestre",
-                "ordinal": 1,
-                "column": "trimestre"
-              },
-              {
-                "name": "Mes",
-                "ordinal": 2,
-                "column": "mes"
-              }
-            ]
+            "name": "Ingresos por región",
+            "expression": "SUM(Regiones[viajeros])",
+            "formatString": "#,0"
+          }
+        ]
+      },
+      {
+        "name": "Mercados",
+        "columns": [
+          {
+            "name": "fecha",
+            "dataType": "dateTime",
+            "sourceColumn": "fecha",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "Región",
+            "dataType": "string",
+            "sourceColumn": "Región",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "País",
+            "dataType": "string",
+            "sourceColumn": "País",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "viajeros",
+            "dataType": "double",
+            "sourceColumn": "viajeros",
+            "summarizeBy": "sum",
+            "isHidden": true
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Mercados",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Fuente = Csv.Document(File.Contents(RutaDatos & \"/mercados.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),",
+                "    Encabezados = Table.PromoteHeaders(Fuente, [PromoteAllScalars=true]),",
+                "    Tipos = Table.TransformColumnTypes(Encabezados, {{\"fecha\", type date}, {\"Región\", type text}, {\"País\", type text}, {\"viajeros\", type number}}, \"en-US\")",
+                "in",
+                "    Tipos"
+              ]
+            }
+          }
+        ],
+        "measures": [
+          {
+            "name": "Ingresos por país",
+            "expression": "SUM(Mercados[viajeros])",
+            "formatString": "#,0"
+          },
+          {
+            "name": "Aviso países",
+            "expression": "IF(ISBLANK([Ingresos por país]), \"La región elegida no tiene registros por país en este periodo.\", \"\")"
+          }
+        ]
+      },
+      {
+        "name": "Fronteras",
+        "columns": [
+          {
+            "name": "fecha",
+            "dataType": "dateTime",
+            "sourceColumn": "fecha",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "via",
+            "dataType": "string",
+            "sourceColumn": "via",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "Frontera",
+            "dataType": "string",
+            "sourceColumn": "Frontera",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "viajeros",
+            "dataType": "double",
+            "sourceColumn": "viajeros",
+            "summarizeBy": "sum",
+            "isHidden": true
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Fronteras",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Fuente = Csv.Document(File.Contents(RutaDatos & \"/fronteras.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),",
+                "    Encabezados = Table.PromoteHeaders(Fuente, [PromoteAllScalars=true]),",
+                "    Tipos = Table.TransformColumnTypes(Encabezados, {{\"fecha\", type date}, {\"Vía\", type text}, {\"Frontera\", type text}, {\"viajeros\", type number}}, \"en-US\"),",
+                "    Renombrar = Table.RenameColumns(Tipos, {{\"Vía\", \"via\"}})",
+                "in",
+                "    Renombrar"
+              ]
+            }
+          }
+        ],
+        "measures": [
+          {
+            "name": "Ingresos por frontera",
+            "expression": "SUM(Fronteras[viajeros])",
+            "formatString": "#,0"
+          },
+          {
+            "name": "Aviso fronteras",
+            "expression": "IF(ISBLANK([Ingresos por frontera]) || [Ingresos por frontera] = 0, \"No hay flujo registrado para esta vía y periodo. Desde 2017 el detalle marítimo es limitado.\", \"\")"
+          }
+        ]
+      },
+      {
+        "name": "IndiceEstacional",
+        "columns": [
+          {
+            "name": "mes_num",
+            "dataType": "int64",
+            "sourceColumn": "mes",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "Mes",
+            "dataType": "string",
+            "sourceColumn": "Mes",
+            "summarizeBy": "none",
+            "sortByColumn": "mes_num"
+          },
+          {
+            "name": "indice_estacional",
+            "dataType": "double",
+            "sourceColumn": "indice_estacional",
+            "summarizeBy": "sum",
+            "isHidden": true
+          }
+        ],
+        "partitions": [
+          {
+            "name": "IndiceEstacional",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Fuente = Csv.Document(File.Contents(RutaDatos & \"/indice_estacional.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),",
+                "    Encabezados = Table.PromoteHeaders(Fuente, [PromoteAllScalars=true]),",
+                "    Tipos = Table.TransformColumnTypes(Encabezados, {{\"mes\", Int64.Type}, {\"indice_estacional\", type number}}, \"en-US\"),",
+                "    NombreMes = Table.AddColumn(Tipos, \"Mes\", each {\"Ene\",\"Feb\",\"Mar\",\"Abr\",\"May\",\"Jun\",\"Jul\",\"Ago\",\"Sep\",\"Oct\",\"Nov\",\"Dic\"}{[mes] - 1}, type text)",
+                "in",
+                "    NombreMes"
+              ]
+            }
+          }
+        ],
+        "measures": [
+          {
+            "name": "Índice estacional",
+            "expression": "SUM(IndiceEstacional[indice_estacional])",
+            "formatString": "0.0"
+          },
+          {
+            "name": "Referencia anual",
+            "expression": "IF(NOT ISEMPTY(IndiceEstacional), 100)",
+            "formatString": "0"
           }
         ]
       },
@@ -151,13 +472,15 @@
             "name": "MAE base",
             "dataType": "double",
             "sourceColumn": "mae",
-            "summarizeBy": "sum"
+            "summarizeBy": "none",
+            "isHidden": true
           },
           {
             "name": "RMSE base",
             "dataType": "double",
             "sourceColumn": "rmse",
-            "summarizeBy": "sum"
+            "summarizeBy": "none",
+            "isHidden": true
           },
           {
             "name": "serie",
@@ -169,6 +492,12 @@
             "name": "evaluacion",
             "dataType": "string",
             "sourceColumn": "evaluacion",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "Tipo de modelo",
+            "dataType": "string",
+            "sourceColumn": "Tipo de modelo",
             "summarizeBy": "none"
           }
         ],
@@ -182,9 +511,10 @@
                 "let",
                 "    Fuente = Csv.Document(File.Contents(RutaDatos & \"/metricas_modelos.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),",
                 "    Encabezados = Table.PromoteHeaders(Fuente, [PromoteAllScalars=true]),",
-                "    Tipos = Table.TransformColumnTypes(Encabezados, {{\"modelo_id\", type text}, {\"modelo\", type text}, {\"mae\", type number}, {\"rmse\", type number}, {\"serie\", type text}, {\"evaluacion\", type text}}, \"en-US\")",
+                "    Tipos = Table.TransformColumnTypes(Encabezados, {{\"modelo_id\", type text}, {\"modelo\", type text}, {\"mae\", type number}, {\"rmse\", type number}, {\"serie\", type text}, {\"evaluacion\", type text}}, \"en-US\"),",
+                "    Tipo = Table.AddColumn(Tipos, \"Tipo de modelo\", each if List.Contains({\"Suavizamiento exponencial simple\", \"Holt-Winters aditivo\", \"Seasonal naive\"}, [modelo]) then \"Simple de referencia\" else \"Otro modelo del Lab 1\", type text)",
                 "in",
-                "    Tipos"
+                "    Tipo"
               ]
             }
           }
@@ -193,76 +523,16 @@
           {
             "name": "MAE",
             "expression": "SELECTEDVALUE(Metricas[MAE base])",
-            "formatString": "#,0.00"
+            "formatString": "#,0"
           },
           {
             "name": "RMSE",
             "expression": "SELECTEDVALUE(Metricas[RMSE base])",
-            "formatString": "#,0.00"
-          }
-        ]
-      },
-      {
-        "name": "Predicciones",
-        "columns": [
-          {
-            "name": "clave",
-            "dataType": "string",
-            "sourceColumn": "clave",
-            "summarizeBy": "none"
+            "formatString": "#,0"
           },
           {
-            "name": "serie",
-            "dataType": "string",
-            "sourceColumn": "serie",
-            "summarizeBy": "none"
-          },
-          {
-            "name": "fecha",
-            "dataType": "dateTime",
-            "sourceColumn": "fecha",
-            "summarizeBy": "none"
-          },
-          {
-            "name": "real",
-            "dataType": "double",
-            "sourceColumn": "real",
-            "summarizeBy": "sum"
-          },
-          {
-            "name": "prediccion",
-            "dataType": "double",
-            "sourceColumn": "prediccion",
-            "summarizeBy": "sum"
-          }
-        ],
-        "partitions": [
-          {
-            "name": "Predicciones",
-            "mode": "import",
-            "source": {
-              "type": "m",
-              "expression": [
-                "let",
-                "    Fuente = Csv.Document(File.Contents(RutaDatos & \"/predicciones_lstm.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),",
-                "    Encabezados = Table.PromoteHeaders(Fuente, [PromoteAllScalars=true]),",
-                "    Tipos = Table.TransformColumnTypes(Encabezados, {{\"clave\", type text}, {\"serie\", type text}, {\"fecha\", type date}, {\"real\", type number}, {\"prediccion\", type number}}, \"en-US\")",
-                "in",
-                "    Tipos"
-              ]
-            }
-          }
-        ],
-        "measures": [
-          {
-            "name": "Observado",
-            "expression": "VAR Serie = SELECTEDVALUE(Predicciones[clave], \"total_viajeros\") RETURN CALCULATE(SUM(Predicciones[real]), KEEPFILTERS(Predicciones[clave] = Serie))",
-            "formatString": "#,0.00"
-          },
-          {
-            "name": "Estimado LSTM",
-            "expression": "VAR Serie = SELECTEDVALUE(Predicciones[clave], \"total_viajeros\") RETURN CALCULATE(SUM(Predicciones[prediccion]), KEEPFILTERS(Predicciones[clave] = Serie))",
-            "formatString": "#,0.00"
+            "name": "Menor RMSE seleccionado",
+            "expression": "VAR Mejor = TOPN(1, VALUES(Metricas[modelo]), CALCULATE(MIN(Metricas[RMSE base])), ASC)\nRETURN IF(ISEMPTY(Metricas), \"Seleccione al menos un modelo.\", \"Menor RMSE entre los seleccionados: \" & CONCATENATEX(Mejor, Metricas[modelo], \", \") & \" (\" & FORMAT(CALCULATE(MIN(Metricas[RMSE base])), \"#,0\") & \" visitantes)\")"
           }
         ]
       },
@@ -300,22 +570,22 @@
             "summarizeBy": "none"
           },
           {
-            "name": "mae_test",
+            "name": "MAE LSTM",
             "dataType": "double",
             "sourceColumn": "mae_test",
-            "summarizeBy": "sum"
+            "summarizeBy": "none"
           },
           {
-            "name": "rmse_test",
+            "name": "RMSE LSTM",
             "dataType": "double",
             "sourceColumn": "rmse_test",
-            "summarizeBy": "sum"
+            "summarizeBy": "none"
           },
           {
-            "name": "smape_test",
+            "name": "sMAPE %",
             "dataType": "double",
             "sourceColumn": "smape_test",
-            "summarizeBy": "sum"
+            "summarizeBy": "none"
           }
         ],
         "partitions": [
@@ -335,22 +605,180 @@
             }
           }
         ]
+      },
+      {
+        "name": "Predicciones",
+        "columns": [
+          {
+            "name": "clave",
+            "dataType": "string",
+            "sourceColumn": "clave",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "serie",
+            "dataType": "string",
+            "sourceColumn": "serie",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "fecha",
+            "dataType": "dateTime",
+            "sourceColumn": "fecha",
+            "summarizeBy": "none",
+            "formatString": "yyyy-mm"
+          },
+          {
+            "name": "real",
+            "dataType": "double",
+            "sourceColumn": "real",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "prediccion",
+            "dataType": "double",
+            "sourceColumn": "prediccion",
+            "summarizeBy": "none",
+            "isHidden": true
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Predicciones",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Fuente = Csv.Document(File.Contents(RutaDatos & \"/predicciones_lstm.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),",
+                "    Encabezados = Table.PromoteHeaders(Fuente, [PromoteAllScalars=true]),",
+                "    Tipos = Table.TransformColumnTypes(Encabezados, {{\"clave\", type text}, {\"serie\", type text}, {\"fecha\", type date}, {\"real\", type number}, {\"prediccion\", type number}}, \"en-US\")",
+                "in",
+                "    Tipos"
+              ]
+            }
+          }
+        ],
+        "measures": [
+          {
+            "name": "Observado",
+            "expression": "VAR Serie = SELECTEDVALUE(MetricasLSTM[clave], \"total_viajeros\") RETURN CALCULATE(SUM(Predicciones[real]), KEEPFILTERS(Predicciones[clave] = Serie))",
+            "formatString": "#,0"
+          },
+          {
+            "name": "Estimado LSTM",
+            "expression": "VAR Serie = SELECTEDVALUE(MetricasLSTM[clave], \"total_viajeros\") RETURN CALCULATE(SUM(Predicciones[prediccion]), KEEPFILTERS(Predicciones[clave] = Serie))",
+            "formatString": "#,0"
+          },
+          {
+            "name": "Error absoluto LSTM",
+            "expression": "VAR Serie = SELECTEDVALUE(MetricasLSTM[clave], \"total_viajeros\") RETURN CALCULATE(SUMX(Predicciones, ABS(Predicciones[real] - Predicciones[prediccion])), KEEPFILTERS(Predicciones[clave] = Serie))",
+            "formatString": "#,0"
+          },
+          {
+            "name": "Serie LSTM consultada",
+            "expression": "VAR Serie = SELECTEDVALUE(MetricasLSTM[serie], \"Total mensual de viajeros\") RETURN \"Serie consultada: \" & Serie & \". Evaluación histórica abril 2021 a junio 2026.\""
+          }
+        ]
       }
     ],
     "expressions": [
       {
         "name": "RutaDatos",
         "kind": "m",
-        "expression": "\"C:/Users/mdax8/Desktop/UVG/8 Semestre/Data Science/Lab 12/output/PowerBI_Avance/data/processed\" meta [IsParameterQuery=true, Type=\"Text\", IsParameterQueryRequired=true]"
+        "expression": "\"C:/Users/mdax8/Desktop/UVG/8 Semestre/Data Science/Lab 12/LAB12_DS/data/processed\" meta [IsParameterQuery=true, Type=\"Text\", IsParameterQueryRequired=true]"
       }
     ],
     "relationships": [
       {
-        "name": "8f20e90a-6c3a-51a3-b82d-431ea978ad53",
+        "name": "d57b57cf-98e0-56d6-b3f5-e48060f30b37",
         "fromTable": "Flujo",
         "fromColumn": "fecha",
         "toTable": "Calendario",
         "toColumn": "fecha",
+        "fromCardinality": "many",
+        "toCardinality": "one",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "42718793-a724-58e0-900d-1b019bc430e0",
+        "fromTable": "Flujo",
+        "fromColumn": "via",
+        "toTable": "Vias",
+        "toColumn": "via",
+        "fromCardinality": "many",
+        "toCardinality": "one",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "cfe342a5-8531-5aff-88a3-3e0788ea8507",
+        "fromTable": "Regiones",
+        "fromColumn": "fecha",
+        "toTable": "Calendario",
+        "toColumn": "fecha",
+        "fromCardinality": "many",
+        "toCardinality": "one",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "ecb3ca19-4763-5e64-8a3d-dc574c0fca54",
+        "fromTable": "Regiones",
+        "fromColumn": "Región",
+        "toTable": "Region",
+        "toColumn": "Región",
+        "fromCardinality": "many",
+        "toCardinality": "one",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "b0c5c162-1ea1-5312-94fe-19d8e80b41ee",
+        "fromTable": "Mercados",
+        "fromColumn": "fecha",
+        "toTable": "Calendario",
+        "toColumn": "fecha",
+        "fromCardinality": "many",
+        "toCardinality": "one",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "d94b8af0-d593-5974-beb6-a7288457c745",
+        "fromTable": "Mercados",
+        "fromColumn": "Región",
+        "toTable": "Region",
+        "toColumn": "Región",
+        "fromCardinality": "many",
+        "toCardinality": "one",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "15205cfd-1c7b-503e-a480-bfabda1d3292",
+        "fromTable": "Fronteras",
+        "fromColumn": "fecha",
+        "toTable": "Calendario",
+        "toColumn": "fecha",
+        "fromCardinality": "many",
+        "toCardinality": "one",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "90078c85-6f18-58c8-bed0-b4f101701660",
+        "fromTable": "Fronteras",
+        "fromColumn": "via",
+        "toTable": "Vias",
+        "toColumn": "via",
+        "fromCardinality": "many",
+        "toCardinality": "one",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "a310319b-7998-5cc6-af88-7c156311d088",
+        "fromTable": "Predicciones",
+        "fromColumn": "clave",
+        "toTable": "MetricasLSTM",
+        "toColumn": "clave",
         "fromCardinality": "many",
         "toCardinality": "one",
         "crossFilteringBehavior": "oneDirection"

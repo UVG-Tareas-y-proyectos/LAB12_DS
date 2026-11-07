@@ -1,0 +1,111 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "fuente",
+  "position": {
+    "x": 650,
+    "y": 80,
+    "z": 700,
+    "height": 300,
+    "width": 610,
+    "tabOrder": 700
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Fuente y alcance",
+                    "textStyle": {
+                      "fontFamily": "Arial",
+                      "fontSize": "12pt",
+                      "fontWeight": "bold",
+                      "color": "#214E66"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "Base académica Base_Migracion_2009-2026jun.xlsx, hoja Datos. Se suman Turista y Excursionista; no se suman Viajero ni Cruceristas. Las cifras son ingresos registrados, no personas únicas. Los decimales provienen de estimaciones expandidas de encuesta.",
+                    "textStyle": {
+                      "fontFamily": "Arial",
+                      "fontSize": "10pt",
+                      "fontWeight": "normal",
+                      "color": "#1E1E1E"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "Límites para decidir",
+                    "textStyle": {
+                      "fontFamily": "Arial",
+                      "fontSize": "12pt",
+                      "fontWeight": "bold",
+                      "color": "#214E66"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "No estima gasto turístico, impacto ambiental ni causas. 2020 y 2021 son atípicos; 2026 es parcial. Desde 2023 cambia la metodología y desde 2017 se reduce el detalle marítimo. El error histórico de un modelo no garantiza su exactitud futura.",
+                    "textStyle": {
+                      "fontFamily": "Arial",
+                      "fontSize": "10pt",
+                      "fontWeight": "normal",
+                      "color": "#1E1E1E"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#FFFFFF'"
+                    }
+                  }
+                }
+              }
+            },
+            "transparency": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
