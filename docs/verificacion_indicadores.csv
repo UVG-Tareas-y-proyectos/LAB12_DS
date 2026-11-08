@@ -1,0 +1,7 @@
+indicador,filtro,streamlit_lab10,power_bi,diferencia,explicacion
+Ingresos,Sin filtros,46711912.89 (se muestra 46.71 M),46711913,0,Redondeo de presentación
+Participación terrestre,Sin filtros,59.07 % (se muestra 59.1 %),59.07 %,0,Streamlit muestra un decimal
+Ingresos,2019 meses 1-6,2023752.09,2023752.09,0,
+Participación terrestre,2019 meses 1-6,64.70 %,64.70 %,0,
+Ingresos por vía,Diciembre 2014,Aérea 117878; Marítima 1140; Terrestre 206354.73,Aérea 117878; Marítima 1140; Terrestre 206354.73,0,
+RMSE SES,Prueba abril 2021 a junio 2026,180598.23,180598.23,0,Misma exportación del Lab 1

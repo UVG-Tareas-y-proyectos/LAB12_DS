@@ -1,1 +1,8 @@
 fecha,participante,herramienta,actividad,inicio,fin,pausas_minutos,tiempo_efectivo_minutos,origen_del_registro
+2026-10-22,Milton Polanco,Streamlit,"Avance: datos iniciales, primeras gráficas y documento",,,,180,Estimación del equipo
+2026-10-24,Ihan Marroquin,Streamlit,Preparación y validación de datos,,,,180,Estimación del equipo
+2026-10-25,Diego Patzan,Streamlit,"Ocho vistas, filtros y navegación",,,,300,Estimación del equipo
+2026-10-25,Ihan Marroquin,Streamlit,Documento de diseño y entrega,,,,120,Estimación del equipo
+2026-11-05,Diego Patzan; Milton Polanco,Power BI,"Avance: importación, modelo, dos gráficas enlazadas y documento",,,,180,Estimación del equipo
+2026-11-08,Diego Patzan,Power BI,"Páginas restantes, navegación, jerarquía y medidas",,,,180,Estimación del equipo
+2026-11-08,Ihan Marroquin; Milton Polanco,Power BI,"Pruebas, verificación y documento final",,,,120,Estimación del equipo

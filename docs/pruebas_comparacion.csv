@@ -1,7 +1,7 @@
-prueba,herramienta,participante,fecha,version,sistema_operativo,equipo,experiencia_previa,filtros,pasos,clics,segundos,resultado_obtenido,dificultades,evidencia
-consulta_indicadores,Streamlit,,,,,,,,,,,,,
-consulta_indicadores,Power BI,,,,,,,,,,,,,
-detalle_y_regreso,Streamlit,,,,,,,,,,,,,
-detalle_y_regreso,Power BI,,,,,,,,,,,,,
-resultados_modelos,Streamlit,,,,,,,,,,,,,
-resultados_modelos,Power BI,,,,,,,,,,,,,
+prueba,herramienta,participante,fecha,version,sistema_operativo,equipo,experiencia_previa,filtros,pasos,clics,segundos,resultado_esperado,resultado_obtenido,dificultades,evidencia
+consulta_indicadores,Streamlit,Ihan Marroquin,2026-11-08,Lab 10 commit 7831e3d; Streamlit 1.50,Windows 11,,,Periodo 2019-2019; meses 1-6,Ajustar deslizador de periodo; ajustar deslizador de meses; leer tarjetas,3,26,2023752 ingresos; 64.70 % terrestre,2023752 ingresos; 64.70 % terrestre,,docs/evidencias/lab10_exploracion.png
+consulta_indicadores,Power BI,Ihan Marroquin,2026-11-08,Power BI Desktop 2.159.1231.0,Windows 11,,,Año 2019; Mes Ene-Jun,Abrir segmentador Año y marcar 2019; abrir segmentador Mes y marcar Ene a Jun; leer tarjetas,9,32,2023752 ingresos; 64.70 % terrestre,2023752 ingresos; 64.70 % terrestre,,docs/evidencias/pbi_exploracion.png
+detalle_y_regreso,Streamlit,Ihan Marroquin,2026-11-08,Lab 10 commit 7831e3d; Streamlit 1.50,Windows 11,,,Sin filtros; nivel Mensual,Clic en diciembre de 2014; leer barras; restablecer vista,3,40,Aérea 117878; Marítima 1140; Terrestre 206355,Aérea 117878; Marítima 1140; Terrestre 206355,,docs/evidencias/lab10_exploracion.png
+detalle_y_regreso,Power BI,Ihan Marroquin,2026-11-08,Power BI Desktop 2.159.1231.0,Windows 11,,,Sin filtros,Activar drill; clic 2014; clic T4; clic Dic; leer barras; subir dos niveles,6,22,Aérea 117878; Marítima 1140; Terrestre 206355,Aérea 117878; Marítima 1140; Terrestre 206355,,docs/evidencias/pbi_jerarquia_temporal.png
+resultados_modelos,Streamlit,Ihan Marroquin,2026-11-08,Lab 10 commit 7831e3d; Streamlit 1.50,Windows 11,,,Modelos preseleccionados; RMSE; serie Total,Abrir pestaña; elegir RMSE; leer barras y serie LSTM,2,15,SES RMSE 180598.23,SES RMSE 180598.23,,docs/evidencias/lab10_modelos.png
+resultados_modelos,Power BI,Ihan Marroquin,2026-11-08,Power BI Desktop 2.159.1231.0,Windows 11,,,Grupo Simple de referencia; serie Total mensual,Botón Estacionalidad y modelos; segmentador de grupo; leer barras y serie LSTM,3,20,SES RMSE 180598.23,SES RMSE 180598.23,,docs/evidencias/pbi_modelos.png
