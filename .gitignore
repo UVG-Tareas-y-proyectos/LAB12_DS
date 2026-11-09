@@ -4,4 +4,3 @@ __pycache__/
 work/
 **/.pbi/
 *.pyc
-.playwright-cli/
